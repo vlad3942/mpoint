@@ -553,6 +553,7 @@ final class PaymentSession
     public function setSessionAdditionalDetails(RDB $obj_DB, $sessionAdditionalData, $ExternalID)
     {
         $additional_id = "";
+        $InsertValuesArr = array();
         if( is_array($sessionAdditionalData) === true )
         {
             foreach ($sessionAdditionalData as $aAdditionalDataObj)
@@ -561,24 +562,25 @@ final class PaymentSession
                 $value = htmlspecialchars($aAdditionalDataObj["value"], ENT_NOQUOTES);
                 if($name === null || empty($name) === true || $value === null || empty($value) === true)
                 {
-                    return $additional_id;
+                    continue;
                 }
+                $this->_aSessionAdditionalData[$name] = $value;
+                $InsertValuesArr[] = "('" . $name . "', '" . $aAdditionalDataObj["value"] . "', '".$aAdditionalDataObj["type"]."', '".$ExternalID."')";
+            }
+            if(empty($InsertValuesArr) === false) {
+                $InsertValues = implode(',', $InsertValuesArr);
                 try {
-                    $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid)
-								VALUES('". $aAdditionalDataObj["name"] ."', '". $aAdditionalDataObj["value"] ."', '". $aAdditionalDataObj["type"] ."','". $ExternalID ."') RETURNING id";
+                    $sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(name, value, type, externalid) VALUES ";
+                    $sql .= $InsertValues." RETURNING id";
                     // Error: Unable to insert a new Additional Data record in the Additional Data Table
-                    if (is_resource($res = $obj_DB->query($sql) ) === false)
-                    {
-                        throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002);
-                    }
-                    else
-                    {
+                    if (is_resource($res = $obj_DB->query($sql)) === false) {
+                        throw new mPointException("Unable to insert new record for Additional Data: " . $res["ID"], 1002);
+                    } else {
                         $RS = pg_fetch_assoc($res);
                         $additional_id = $RS["id"];
-                        $this->_aSessionAdditionalData[$name] = $value;
                     }
                 } catch (mPointException | Exception $e) {
-                    trigger_error("Unable to insert new record for Additional Data " . $aAdditionalDataObj["name"] . " and value " . $aAdditionalDataObj["value"]);
+                    trigger_error("Unable to insert new record for Additional Data " . $InsertValues);
                 }
             }
             return $additional_id;

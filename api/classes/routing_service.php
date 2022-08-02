@@ -306,17 +306,23 @@ class RoutingService extends General
             $aObj_Route = $obj_RoutingServiceResponse->getRoutes();
             $aRoutes = $aObj_Route->routes->route;
 
+            $setAdditionalData = false;
+            $index = 0;
             if(empty($aObj_Route->kpi_used) === false && $aObj_Route->kpi_used === true)
             {
-                $additionalTxnData[0]['name'] = 'kpi_used';
-                $additionalTxnData[0]['value'] = 'true';
-                $additionalTxnData[0]['type'] = 'Transaction';
-                $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
+                $additionalTxnData[$index]['name'] = 'kpi_used';
+                $additionalTxnData[$index]['value'] = 'true';
+                $additionalTxnData[$index]['type'] = 'Transaction';
+                $setAdditionalData = true;
+                $index++;
             }
             if(empty($aObj_Route->rule_id) === false){
-                $additionalTxnData[0]['name'] = 'rule_id';
-                $additionalTxnData[0]['value'] = (int)$aObj_Route->rule_id;
-                $additionalTxnData[0]['type'] = 'Transaction';
+                $additionalTxnData[$index]['name'] = 'rule_id';
+                $additionalTxnData[$index]['value'] = (int)$aObj_Route->rule_id;
+                $additionalTxnData[$index]['type'] = 'Transaction';
+                $setAdditionalData = true;
+            }
+            if($setAdditionalData === true){
                 $this->_obj_TxnInfo->setAdditionalDetails($objTxnRoute->getDBConn(), $additionalTxnData, $this->_obj_TxnInfo->getID());
             }
 
