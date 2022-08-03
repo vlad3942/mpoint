@@ -720,7 +720,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                     $cardXML .= $obj_XML->item[$j]->prefixes->asXML();
 
-                                    if (((int)$obj_XML->item[$j]['payment-type']) === (Constants::iPAYMENT_TYPE_ONLINE_BANKING || Constants::iPAYMENT_TYPE_MOBILE_MONEY)) {
+                                    if (((int)$obj_XML->item[$j]['payment-type']) === Constants::iPAYMENT_TYPE_ONLINE_BANKING || ((int)$obj_XML->item[$j]['payment-type']) === Constants::iPAYMENT_TYPE_MOBILE_MONEY) {
                                         try {
                                             $pspId  = (int)$obj_XML->item[$j]['pspid'];
                                             if ($is_legacy === false) {

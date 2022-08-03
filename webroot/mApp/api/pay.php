@@ -528,9 +528,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									}
 									$obj_paymentProcessor = $aObj_PSPConfigs[$pspId];
 								}
-
+                                $paymentType = $obj_card->getPaymentType($_OBJ_DB);
 								// Success: Payment Service Provider Configuration found
-								if (($obj_paymentProcessor instanceof WalletProcessor || $obj_paymentProcessor instanceof PaymentProcessor ) && ( $obj_card->getPaymentType($_OBJ_DB) === (Constants::iPAYMENT_TYPE_OFFLINE || Constants::iPAYMENT_TYPE_MOBILE_MONEY) || $obj_paymentProcessor->getPSPConfig() instanceof PSPConfig === true ))
+                                if (($obj_paymentProcessor instanceof WalletProcessor || $obj_paymentProcessor instanceof PaymentProcessor ) && ( $paymentType === Constants::iPAYMENT_TYPE_OFFLINE || $paymentType === Constants::iPAYMENT_TYPE_MOBILE_MONEY || $obj_paymentProcessor->getPSPConfig() instanceof PSPConfig === true ))
 								{
 									try
 									{
