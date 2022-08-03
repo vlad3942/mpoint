@@ -1,4 +1,3 @@
-
 /*#Step 1: UPDATE Capture Amount*/
 update log.transaction_tbl set captured = (amount+fee) where id in (32710650,32710110,32711323);
 
@@ -22,4 +21,4 @@ insert into log.message_tbl (txnid,stateid) select id,4030 from log.transaction_
 
 /*#Step 6: Update stateid in sessionid*/
 
-UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (32710650,32710110,32711323) and clientid=10077);
+UPDATE log.session_tbl set stateid=4030 where id in (select sessionid from log.transaction_tbl tt where id in (32710650,32710110,32711323) and clientid=10077); 
