@@ -291,6 +291,15 @@ $aHTTP_CONN_INFO[70]["paths"]["get-payment-methods"] = "/_test/simulators/safety
 $aHTTP_CONN_INFO[70]["path"] = $aHTTP_CONN_INFO[70]["paths"]["pay"];
 
 /**
+ * Connection info for connecting to Cellulant
+ */
+$aHTTP_CONN_INFO[58]["timeout"] = 120;
+$aHTTP_CONN_INFO[58]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[58]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[58]["paths"]["pay"] = "/_test/simulators/cellulant/pay.php";
+$aHTTP_CONN_INFO[58]["paths"]["initialize"] = "/_test/simulators/cellulant/pay.php";
+$aHTTP_CONN_INFO[58]["paths"]["get-payment-methods"] = "/_test/simulators/cellulant/get-payment-methods.php";
+/**
  * Connection info for connecting to PayU
  */
 $aHTTP_CONN_INFO[53]["timeout"] = 120;
