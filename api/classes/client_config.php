@@ -1509,7 +1509,8 @@ class ClientConfig extends BasicConfig
             
 			$sql  = "SELECT ipaddress
 					 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
-					 WHERE clientid = ". intval($id) ."";
+					 WHERE clientid = ". intval($id) ."
+					 AND enabled = true ";
 	//		echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
 			$aIPs = array();
