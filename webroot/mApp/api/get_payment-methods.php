@@ -85,8 +85,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $_OBJ_DB);
 				$obj_ClientConfig = $obj_TxnInfo->getClientConfig();
 				$obj_ClientAccountsConfig = AccountConfig::produceConfigurations($_OBJ_DB, $obj_ClientConfig->getID());
-				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
-					&& $obj_ClientConfig->hasAccess($_SERVER['HTTP_X_ORIGINAL_FORWARDED_FOR']) === true)
+				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']))
 				{
 					$obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
