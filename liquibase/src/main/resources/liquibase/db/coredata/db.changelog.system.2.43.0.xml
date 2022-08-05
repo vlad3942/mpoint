@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+
+    <changeSet author="Amar kumar" id="2022-07-29-CPMRM-17225">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="psp_tbl">
+            <column name="id" value="79"/>
+            <column name="name" value="Vyne"/>
+            <column name="system_type" value="7"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="card_tbl">
+            <column name="id" value="105"/>
+            <column name="name" value="Vyne"/>
+            <column name="enabled" value="true"/>
+            <column name="paymenttype" value="7"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="105" />
+            <column name="pspid" value="79"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="105"/>
+            <column name="min" value="0" />
+            <column name="max" value="0" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="79"/>
+            <column name="name" value="GBP" />
+            <column name="currencyid" value="826" />
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-826"/>
+            <column name="cardid" value="105"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
+            <column name="pspid" value="79"/>
+            <column name="name" value="DESTINATION_ACCOUNT"/>
+            <column name="datatype" value="3"/>
+            <column name="ismandatory" value="true"/>
+            <column name="category" value="2"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
