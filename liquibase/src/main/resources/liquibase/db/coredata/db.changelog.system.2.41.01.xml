@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    
+    <changeSet author="Priya Alamwar"
+               id="2022-08-01-CPMRM-17611-system-1" failOnError="false">
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="paymenttype_tbl">
+
+            <column name="id" value="9"/>
+            <column name="name" value="Mobile Money"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Priya Alamwar"
+               id="2022-08-01-CPMRM-17611-system-2" failOnError="false">
+        <update catalogName="system" schemaName="system"
+                tableName="card_tbl">
+            <column name="name" value="Cellulant" />
+            <column name="paymenttype" value="9" />
+            <where>id = 86</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>
