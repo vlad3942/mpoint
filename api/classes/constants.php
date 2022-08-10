@@ -1876,6 +1876,7 @@ abstract class Constants
     const iPAYMENT_TYPE_VIRTUAL = 6;
     const iPAYMENT_TYPE_ONLINE_BANKING = 7;
 	const iPAYMENT_TYPE_OFFLINE = 8;
+	const iPAYMENT_TYPE_MOBILE_MONEY = 9;
 
     /*
 	 * Alternate routes to authorize payment  if primary fails during authorize
