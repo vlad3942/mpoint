@@ -4,9 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
-    
+
     <changeSet author="Priya Alamwar"
-               id="2022-08-01-CPMRM-17611-system-1" failOnError="false">
+               id="2022-08-01-CPMRM-17611-system-1">
 
         <insert catalogName="system"
                 schemaName="system"
@@ -18,7 +18,7 @@
     </changeSet>
 
     <changeSet author="Priya Alamwar"
-               id="2022-08-01-CPMRM-17611-system-2" failOnError="false">
+               id="2022-08-01-CPMRM-17611-system-2">
         <update catalogName="system" schemaName="system"
                 tableName="card_tbl">
             <column name="name" value="Cellulant" />
