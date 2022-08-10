@@ -3,7 +3,547 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Bharat Bisht" id="2022-06-15-CPMRM-16891-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(1) FROM system.psp_tbl WHERE name = 'Reach'</sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="psp_tbl">
+            <column name="id" value="78"/>
+            <column name="name" value="Reach"/>
+            <column name="system_type" value="7"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-05-23-CPMRM-16891" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="7" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="8" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="1" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="3" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="22" />
+            <column name="pspid" value="78"/>
+            <column name="enabled" value="true"/>
+        </insert>
+
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="78"/>
+            <column name="name" value="USD" />
+            <column name="currencyid" value="840" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-21-CPMRM-16891" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
+            <column name="pspid" value="78"/>
+            <column name="name" value="HMAC_SECRET" />
+            <column name="datatype" value="3" />
+            <column name="ismandatory" value="true" />
+            <column name="category" value="8" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sqlCheck expectedResult="1">SELECT count(1) FROM system.psp_tbl WHERE name = 'Mercado Pago'</sqlCheck>
+            </not>
+        </preConditions>
+        <insert catalogName="system"
+                schemaName="system"
+                tableName="psp_tbl">
+            <column name="id" value="77"/>
+            <column name="name" value="Mercado Pago"/>
+            <column name="system_type" value="7"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-2">
+        <insert catalogName="system" schemaName="system" tableName="card_tbl">
+            <column name="id" value="103"/>
+            <column name="name" value="Mercado Pago"/>
+            <column name="enabled" value="true"/>
+            <column name="position" value="23"/>
+            <column name="minlength" value="-1"/>
+            <column name="maxlength" value="-1"/>
+            <column name="cvclength" value="-1"/>
+            <column name="paymenttype" value="4"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-3">
+        <insert catalogName="system" schemaName="system" tableName="pspcard_tbl">
+            <column name="cardid" value="103" />
+            <column name="pspid" value="77"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-4">
+        <insert catalogName="system" schemaName="system" tableName="cardprefix_tbl">
+            <column name="cardid" value="103"/>
+            <column name="min" value="0" />
+            <column name="max" value="0" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-5">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="ARS" />
+            <column name="currencyid" value="32" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-6">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="BRL" />
+            <column name="currencyid" value="986" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-7">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="COP" />
+            <column name="currencyid" value="170" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-8">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="MXN" />
+            <column name="currencyid" value="484" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-9">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="UYU" />
+            <column name="currencyid" value="858" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-10">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="CLP" />
+            <column name="currencyid" value="152" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-11">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="PEN" />
+            <column name="currencyid" value="604" />
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-12">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-13">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-986"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-14">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-15">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-484"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-16">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-858"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-17">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-18">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-604"/>
+            <column name="cardid" value="103"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-19">
+        <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="INSTALLMENTS"/>
+            <column name="datatype" value="2"/>
+            <column name="ismandatory" value="true"/>
+            <column name="category" value="2"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-20">
+        <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="EXCLUDED_PAYMENT_METHODS"/>
+            <column name="datatype" value="3"/>
+            <column name="ismandatory" value="true"/>
+            <column name="category" value="2"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Bharat Bisht" id="2022-06-14-CPMRM-6902-21">
+        <insert catalogName="system" schemaName="system" tableName="route_property_tbl">
+            <column name="pspid" value="77"/>
+            <column name="name" value="EXCLUDED_PAYMENT_TYPES"/>
+            <column name="datatype" value="3"/>
+            <column name="ismandatory" value="true"/>
+            <column name="category" value="2"/>
+            <column name="enabled" value="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="Amar Kumar" id="2022-06-21-INF-102">
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Insufficient Balance"/>
+            <where>id = 1408001</where>
+        </update>
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Insufficient Balance"/>
+            <where>id = 1407001</where>
+        </update>
+        <delete  catalogName="log" schemaName="log" tableName="state_tbl">
+            <where>name = 'Your Agency Payment Balance is zero (0). Please select another payment method to complete your booking.' and id = 1409001</where>
+        </delete>
+    </changeSet>
+
+    <changeSet author="Amar kumar" id="2022-06-24-INF-120">
+        <update catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="name" value="Voucher/ Credit Account Closed"/>
+            <where>id = 1406001</where>
+        </update>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1409" />
+            <column name="name" value="No booking state" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1408" />
+            <column name="name" value="Voucher/ Credit Insufficient Balance" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1400" />
+            <column name="name" value="Voucher/ Credit Success" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1400001" />
+            <column name="name" value="Voucher/ Credit Success" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1407" />
+            <column name="name" value="Voucher/ Credit not setup" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1406" />
+            <column name="name" value="Voucher/ Credit Account Closed" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1402" />
+            <column name="name" value="Voucher/ Credit Zero Balance" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1402001" />
+            <column name="name" value="Voucher/ Credit Zero Balance" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1409001" />
+            <column name="name" value="Voucher/ Credit No Booking State" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1500" />
+            <column name="name" value="Voucher/ Credit Currency convertion Error" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1500001" />
+            <column name="name" value="Voucher/ Credit Currency convertion Error" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1501" />
+            <column name="name" value="Voucher/ Credit Invalid Token Error" />
+            <column name="module" value="''" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="log" schemaName="log" tableName="state_tbl">
+            <column name="id" value="1501001" />
+            <column name="name" value="Voucher/ Credit Invalid Token Error" />
+            <column name="module" value="sub-code" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
+    <changeSet author="Abhinav Shaha" id="2022-07-01-CPMRM-16699" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="psp_property_tbl">
+            <column name="pspid" value="63"/>
+            <column name="name" value="post_fraud_rule" />
+            <column name="datatype" value="3" />
+            <column name="ismandatory" value="false"/>
+            <column name="category" value="7" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
+    <changeSet author="Abhinav Shaha" id="2022-08-01-CPMRM-17601" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="COP" />
+            <column name="enabled" value="true" />
+            <column name="currencyid" value="170" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="pspcurrency_tbl">
+            <column name="pspid" value="10"/>
+            <column name="name" value="CLP" />
+            <column name="enabled" value="true" />
+            <column name="currencyid" value="152" />
+        </insert>
+    </changeSet>
+
+    <changeSet author="Abhinav Shaha" id="2022-08-01-CPMRM-17601-2" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="101" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="32" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="45" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="50" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="52" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="53" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="61" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-170"/>
+            <column name="cardid" value="66" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="101" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="32" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="45" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="50" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="52" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="53" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="61" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-152"/>
+            <column name="cardid" value="66" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
+
+    <changeSet author="Abhinav Shaha" id="2022-08-01-CPMRM-17601-3" runOnChange="true">
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-840"/>
+            <column name="cardid" value="45" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-840"/>
+            <column name="cardid" value="50" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-840"/>
+            <column name="cardid" value="52" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-840"/>
+            <column name="cardid" value="53" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-840"/>
+            <column name="cardid" value="61" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-840"/>
+            <column name="cardid" value="66" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="45" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="32" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="50" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="52" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="53" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="61" />
+            <column name="enabled" value="true" />
+        </insert>
+        <insert catalogName="system" schemaName="system" tableName="cardpricing_tbl">
+            <column name="pricepointid" value="-32"/>
+            <column name="cardid" value="66" />
+            <column name="enabled" value="true" />
+        </insert>
+    </changeSet>
 
     <changeSet author="Priya Alamwar"
                id="2022-08-01-CPMRM-17611-system-1">
@@ -27,5 +567,4 @@
         </update>
     </changeSet>
 
-    
 </databaseChangeLog>

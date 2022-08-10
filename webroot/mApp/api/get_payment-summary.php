@@ -89,8 +89,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-summary'}[$i]["client-id"], (integer) $obj_DOM->{'get-payment-summary'}[$i]["account"]);
 				// Client successfully authenticated
- 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
- 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
+ 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']))
 				{
 					$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'get-payment-summary'}[$i]->transaction["id"], $_OBJ_DB);
 					// Re-Intialise Text Translation Object based on transaction

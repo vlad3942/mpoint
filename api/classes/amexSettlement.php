@@ -237,9 +237,10 @@ class AmexSettlement extends mPointSettlement
 											$passbookStatus = Constants::sPassbookStatusError;
 										}
 
-										if ($passbookState !== 0) {
-											$txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
-										}
+                                        /*In case of Capture Success completeCapture will take care of updateing passbook entry to done*/
+                                        if ($passbookState !== 0 && !($isSuccess === TRUE && $recordType == "CAPTURE")) {
+                                            $txnPassbookObj->updateInProgressOperations($amount, $passbookState, $passbookStatus);
+                                        }
                                     }
 
                                     if($isSuccess === true)

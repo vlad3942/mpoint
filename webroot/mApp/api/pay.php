@@ -140,7 +140,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 
 				// Client successfully authenticated
- 				if ($obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW']))
+ 				if ($obj_ClientConfig->hasAccess($_SERVER['HTTP_X_ORIGINAL_FORWARDED_FOR']) === true && $obj_ClientConfig->getUsername() === trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() === trim($_SERVER['PHP_AUTH_PW']))
                  {
                     $repository = new ReadOnlyConfigRepository($_OBJ_DB,$obj_TxnInfo);
                     $isVoucherRedeem = FALSE;
